@@ -26,7 +26,6 @@ if (MSVC)
 endif()
 
 # Подключаем подпроекты.
-add_subdirectory(args_types)
 add_subdirectory(args_parse)
 add_subdirectory(demo)
 
