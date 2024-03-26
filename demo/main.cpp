@@ -5,9 +5,9 @@ int main(int argc, const char ** argv)
     args_parse::EatParams(argc, argv);
     args_parse::ArgsParser parser;
     Arg* arg = new args_types::IntArg('a', "append");
-    Arg* arg2 = new args_types::BoolArg('v', "verbose");
-    Arg* arg3 = new args_types::StringArg('i', "input-file");
-    Arg* arg4 = new args_types::StringArg('o', "output-file");
+    Arg* arg2 = new args_types::IntArg('s', "substriction");
+    Arg* arg3 = new args_types::StringArg('i', "input");
+    Arg* arg4 = new args_types::StringArg('o', "output");
 
     parser.add(arg);
     parser.add(arg2);

@@ -15,7 +15,7 @@ namespace args_types
 	class Arg:public Interface
 	{
 	protected:
-		string longName;
+		string longName="";
 		char shortName;
 		string description;
 	public:
