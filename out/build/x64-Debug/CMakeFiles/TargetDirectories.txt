@@ -1,8 +1,8 @@
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/args_parse/CMakeFiles/args_parse.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/args_parse/CMakeFiles/edit_cache.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/args_parse/CMakeFiles/rebuild_cache.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/demo/CMakeFiles/args_parse_demo.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/demo/CMakeFiles/edit_cache.dir
-D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/demo/CMakeFiles/rebuild_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/args_parse/CMakeFiles/args_parse.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/args_parse/CMakeFiles/edit_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/args_parse/CMakeFiles/rebuild_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/demo/CMakeFiles/args_parse_demo.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/demo/CMakeFiles/edit_cache.dir
+C:/Users/user/source/repos/CMDParser/out/build/x64-Debug/demo/CMakeFiles/rebuild_cache.dir

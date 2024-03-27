@@ -52,7 +52,7 @@ namespace args_types
 		/// Возвращает целое число
 		/// 
 		/// @attention 
-		/// Подразумевается что имеет значение Истина/Ложь
+		/// Подразумевается что имеет целое значение
 		virtual int getIntArg() const { return 0; };
 		virtual bool getBoolArg() const { return false; };
 		virtual string getStringArg() const { return ""; };

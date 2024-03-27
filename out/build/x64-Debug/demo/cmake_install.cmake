@@ -1,8 +1,8 @@
-# Install script for directory: D:/Все для работы/source/labs-args-parse-skeleton-v1-master/demo
+# Install script for directory: C:/Users/user/source/repos/CMDParser/demo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/user/Source/Repos/CMDParser/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
