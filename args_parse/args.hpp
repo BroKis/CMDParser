@@ -18,13 +18,24 @@ namespace args_parse
         /// Значения аргументов. Должно быть ровно @a argc.
         const char** argv);
 
+    bool isInteger(const std::string& s);
+    void check_next(int argc, int& index, const char** argv, string& temp);
+    bool isBoolean(const std::string& s);
+
     class ArgsParser
     {
     public:
         virtual void add(Arg*arg);
         virtual bool parse(int argc, const char** argv);
-    protected:
+      
+        ArgsParser();
+        ~ArgsParser();
+    private:
+        virtual void setArguments(string temp_arg, Arg* arg);
+        virtual bool tryParse(int index,string parseable_arg);
         vector<Arg*> Args;
+    protected:
+        
     };
 }/* namespace args_parse */
 
