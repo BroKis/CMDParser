@@ -1,7 +1,6 @@
 #include "args.hpp"
-
 #include <iostream>
-
+#include <algorithm>
 namespace args_parse
 {
 	
@@ -9,7 +8,7 @@ namespace args_parse
 	ArgsParser::~ArgsParser() {
 		Args.clear();
 	}
-
+	const string degree = "=";
 
 	void EatParams(int argc, const char** argv)
 	{
@@ -22,16 +21,14 @@ namespace args_parse
 
 
 	bool isInteger(const std::string& s) {
-		// Проверка на пустую строку
 		if (s.empty())
 			return false;
 
-		// Проверка на знак числа
+		
 		size_t i = 0;
 		if (s[i] == '+' || s[i] == '-')
 			++i;
 
-		// Проверка на наличие только цифр
 		for (; i < s.length(); ++i) {
 			if (!std::isdigit(s[i]))
 				return false;
@@ -66,19 +63,7 @@ namespace args_parse
 		
 	}
 
-	void check_next(int argc, int& index, const char** argv, string& temp)
-	{
-		if (index + 1 < argc)
-		{
-			string next_arg = argv[index + 1];
-			if (strncmp("-", next_arg.c_str(), 1) != 0)
-			{
-				temp = temp + next_arg;
-				index++;
-			}
-		}
-
-	}
+	
 
 	bool isBoolean(const std::string& s) {
 		std::string lowercaseStr;
@@ -122,49 +107,62 @@ namespace args_parse
 			string temp_arg = argv[i];
 			if (tryParse(i,temp_arg))
 			{
-				if (strncmp("--", temp_arg.c_str(), 2) == 0)
+				if (temp_arg.find("--") != string::npos)
 				{
 					for (const auto& arg : Args)
 					{
 						if (temp_arg.find(arg->getLongName()) != string::npos)
 						{
-							check_next(argc, i, argv, temp_arg);
+							
 							if (temp_arg.find('=') != string::npos)
 							{
-								string erased = "--" + arg->getLongName() + "=";
-								temp_arg.erase(0, erased.size());
-								setArguments(temp_arg, arg);
+							
+								auto it = std::search(temp_arg.begin(), temp_arg.end(),
+									degree.begin(), degree.end());
+								string argument(it+1, temp_arg.end());
+								setArguments(argument, arg);
 								
 							}
-							else if (temp_arg.find('=') == string::npos)
+							else
 							{
-								string erased = "--" + arg->getLongName();
-								temp_arg.erase(0, erased.size());
-								setArguments(temp_arg, arg);
+								setArguments(argv[++i], arg);
 							}
+						
 							if (arg->isDefined() == false) { arg->setDefinded(true); }
 							break;
 						}
 					}
 				}
-				else if (strncmp("-", temp_arg.c_str(), 1) == 0)
+				else if (temp_arg.find("-") != string::npos)
 				{
 						for (const auto& arg : Args)
 						{
-							if (temp_arg[1] == arg->getShortName())
+							if (temp_arg.find(arg->getShortName()) != string::npos)
 							{
-								check_next(argc, i, argv, temp_arg);
-								if (temp_arg.find('=') != string::npos)
+								size_t pos = temp_arg.find(degree);
+								char leftChar = (pos > 0) ? temp_arg[pos - 1] : '\0';
+								if (temp_arg.find('=') != string::npos && leftChar == arg->getShortName())
 								{
-									temp_arg.erase(0, 3);
-									setArguments(temp_arg, arg);
+									
+									auto it = std::search(temp_arg.begin(), temp_arg.end(),
+										degree.begin(), degree.end());
+									string argument(it+1, temp_arg.end());
+									setArguments(argument, arg);
+									
+								}
+								else
+								{
+									
+									if (temp_arg.size() > 0)
+									{
+										setArguments(temp_arg, arg);
+									}
+									else
+									{
+										setArguments(argv[++i], arg);
+									}
+								}
 
-								}
-								else if (temp_arg.find('=') == string::npos)
-								{
-									temp_arg.erase(0, 2);
-									setArguments(temp_arg, arg);
-								}
 								if (arg->isDefined() == false) { arg->setDefinded(true); }
 								break;
 							}

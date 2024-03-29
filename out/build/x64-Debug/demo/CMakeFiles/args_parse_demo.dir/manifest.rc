@@ -1,2 +1,2 @@
 #pragma code_page(65001)
-1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "D:/Все для работы/source/labs-args-parse-skeleton-v1-master/out/build/x64-Debug/demo/CMakeFiles/args_parse_demo.dir/embed.manifest"
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "D:/Все для работы/source/CMDParser-main/out/build/x64-Debug/demo/CMakeFiles/args_parse_demo.dir/embed.manifest"

@@ -54,35 +54,71 @@ namespace args_types
 		/// @attention 
 		/// Подразумевается что имеет целое значение
 		virtual int getIntArg() const { return 0; };
+		/// @brief Метод для получения булевого аргумента
+		///
+		/// Возвращает булевый аргумент
 		virtual bool getBoolArg() const { return false; };
+		/// @brief Метод для получения строкового аргумента
+		///
+		/// Возвращает строковый аргумент
 		virtual string getStringArg() const { return ""; };
 		
 	};
 	
+	/// @brief Базовый класс от которого наследуются остальные классы
+	///
+	/// Содержит поля и методы, присущие классам-наследникам
+	/// 
+	/// @attention 
+	/// Все методы вирутальны
 	class Arg:public Interface
 	{
 	private:
+		/// Поле обозначающее определен ли аргумент 
 		bool isDefine = false;
+		/// Поле обозначающее длинное имя аргумента
 		string longName;
+		/// Поле обозначающее короткое имя аргумента
 		char shortName;
+		/// Поле обозначающее описание аргумента
 		string_view description;
 	public:
+		///@brief Конструктор для аргумента если он содержит короткое и длинное имя
+		///
+		/// Создавется объект класса с коротким и длинным именем
 		Arg(char shortName, string_view longName);
+		///@brief Конструктор для аргумента если он содержит длинное имя
+		///
+		/// Создается объект с коротким именем
 		Arg(string_view longName);
+		///@brief Виртуальный деструктор для правильной цепочки наследования и удаления объектов
+
 		virtual ~Arg();
+		///@brief Метод возвращающий короткое имя аргумента
 		virtual char getShortName() const;
+		///@brief Метод возвращающий короткое длинное аргумента
 		virtual string getLongName() const;
-		virtual void addDescription(const string_view& desc);
+		///@brief Метод для добавления описания аргумента
+		virtual void addDescription(
+			///Переменная описания аргумента
+			const string_view& desc
+		);
+
+		///@brief Метод возвращающий описание аргумента
 		virtual string_view getDescription() const;
+		///@brief Метод возвращающий флаг, определяющий определен аргумент или нет
 		virtual bool isDefined() const;
+		///@brief Метод устанавливающий флаг, определен ли аргумент.
 		virtual void setDefinded(bool flag);
 		virtual void showHelp() const {};
 		
 	};
 
+	/// @brief Класс для целого аргумента
 	class IntArg :public Arg
 	{
 	private:
+		/// @brief поле-параметр аргумента
 		int argument;
 	public:
 		IntArg(char shortName, string_view longName);
@@ -93,9 +129,11 @@ namespace args_types
 
 	};
 
+	/// @brief Класс для булевого аргумента
 	class BoolArg :public Arg
 	{
 	private:
+		///Поле-параметр аргумента
 		bool argument;
 	public:
 		BoolArg(char shortName, string_view longName);
@@ -106,10 +144,11 @@ namespace args_types
 	
 
 	};
-
+	/// @brief Класс для строкового аргумента
 	class StringArg :public Arg
 	{
 	private:
+		//Поле - параметр аргумента
 		string argument;
 	public:
 		StringArg(char shortName, string_view longName);
@@ -121,9 +160,11 @@ namespace args_types
 		
 	};
 
+	/// @brief Класс для целого мультиаргумента
 	class MultiIntArg :public Arg
 	{
 	private:
+		/// список целых параметров
 		vector<int> arguments;
 	public:
 
@@ -134,9 +175,12 @@ namespace args_types
 	
 	};
 
+
+	/// @brief Класс для булевого мультиаргумента
 	class MultiBoolArg :public Arg
 	{
 	private:
+		/// список булевых параметров
 		vector<bool> arguments;
 	public:
 		MultiBoolArg(char shortName, string_view longName);
@@ -146,9 +190,11 @@ namespace args_types
 	
 	};
 
+	/// @brief Класс для строкового мультиаргумента
 	class MultiStringArg :public Arg
 	{
 	private:
+		/// список строковых параметров
 		vector<string> arguments;
 	public:
 		MultiStringArg(char shortName, string_view longName);

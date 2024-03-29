@@ -19,7 +19,6 @@ namespace args_parse
         const char** argv);
 
     bool isInteger(const std::string& s);
-    void check_next(int argc, int& index, const char** argv, string& temp);
     bool isBoolean(const std::string& s);
 
     class ArgsParser
