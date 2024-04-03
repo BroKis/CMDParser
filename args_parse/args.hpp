@@ -1,6 +1,7 @@
 #pragma once
 #include "args_types.hpp"
 #include <map>
+#include <memory>
 using namespace args_types;
 namespace args_parse
 {
@@ -17,22 +18,28 @@ namespace args_parse
         int argc,
         /// Значения аргументов. Должно быть ровно @a argc.
         const char** argv);
-
-    bool isInteger(const std::string& s);
-    bool isBoolean(const std::string& s);
+    /// @brief Функция для определения является ли строка числом
+    /// Возвращает истину/ложь
 
     class ArgsParser
     {
     public:
-        virtual void add(Arg*arg);
-        virtual bool parse(int argc, const char** argv);
-      
+        virtual void add(std::unique_ptr<Arg> ptr);
+        virtual args_error::ParseResult parse(int argc, const char** argv);
+        virtual std::unique_ptr<Arg> getArgumentFromVector(int index);
+        void SetValidator(args_validator::ParserValidator* validator);
         ArgsParser();
-        ~ArgsParser();
+        ~ArgsParser() {};
     private:
-        virtual void setArguments(string temp_arg, Arg* arg);
-        virtual bool tryParse(int index,string parseable_arg);
-        vector<Arg*> Args;
+        virtual args_error::ParseResult tryParse(const std::string& parseable_arg);
+        virtual std::string extractParameter(const std::string & source, std::string& extractable);
+        virtual args_error::ParseResult setParamsInLongNameWithEqual(const std::string& source, std::unique_ptr<Arg>const& arg,const char**argv, int&index);
+        virtual args_error::ParseResult setParamsInShortNameWithEqual(const std::string& source, std::unique_ptr<Arg>const& arg);
+        virtual args_error::ParseResult setParamsInShortNameWithoutEqual(const std::string& source, std::unique_ptr<Arg>const& arg, const char** argv, int &index);
+        virtual args_error::ParseResult parseLongNameArgument(const std::string& source, const char**argv, int &index);
+        virtual args_error::ParseResult parseShortNameArgument(const std::string& source, const char**argv, int &index);
+        args_validator::ParserValidator* _validator;
+        std::vector<std::unique_ptr<Arg>> Args;
     protected:
         
     };

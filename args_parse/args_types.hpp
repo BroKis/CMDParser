@@ -1,69 +1,20 @@
 #include <string>
 #include <vector>
-using namespace std;
+#include <string>
+#include "args_error.hpp"
+#include "args_validator.hpp"
+
 
 namespace args_types
 {
-	/// @brief Интерфейс для реализации методов, присущих всем классам-наследникам
-	///
-	/// Содержит виртуальные методы
-	/// 
-	/// @attention 
-	/// Все методы вирутальны и имеют начальную реализацию.
-	class Interface
-	{
-	public:
-		/// @brief Виртуальный деструктор
-		///
-		/// Имеет дефолтную реализацию
-		virtual ~Interface() = default;
-		/// @brief Метод для добавления целого аргумента
-		///
-		/// Добавляется целый аргумент
-		/// 
-		/// @attention 
-		/// Подразумевается что имеет корректное значение
-		virtual void addIntArg(
-			/// Целочисленный аргумент
-			int arg
-		) {}; 
 
-		/// @brief Метод для добавления булевого аргумента
-		///
-		/// Добавляется булевый аргумент
-		/// 
-		/// @attention 
-		/// Подразумевается что имеет значение Истина/Ложь
-		virtual void addBoolArg(
-			///Булевый аргумент
-			bool arg
-		) {};
-
-		/// @brief Метод для добавления строкового аргумента
-		///
-		/// Добавляется строковый  аргумент
-		/// 
-		virtual void addStringArg(
-			///строковый аргумент
-			string arg
-		) {};
-		/// @brief Метод для получения целого аргумента
-		///
-		/// Возвращает целое число
-		/// 
-		/// @attention 
-		/// Подразумевается что имеет целое значение
-		virtual int getIntArg() const { return 0; };
-		/// @brief Метод для получения булевого аргумента
-		///
-		/// Возвращает булевый аргумент
-		virtual bool getBoolArg() const { return false; };
-		/// @brief Метод для получения строкового аргумента
-		///
-		/// Возвращает строковый аргумент
-		virtual string getStringArg() const { return ""; };
-		
+	enum class ArgumentsType {
+		Int,
+		String,
+		Bool,
+		Empty
 	};
+
 	
 	/// @brief Базовый класс от которого наследуются остальные классы
 	///
@@ -71,46 +22,54 @@ namespace args_types
 	/// 
 	/// @attention 
 	/// Все методы вирутальны
-	class Arg:public Interface
+	class Arg
 	{
 	private:
 		/// Поле обозначающее определен ли аргумент 
 		bool isDefine = false;
 		/// Поле обозначающее длинное имя аргумента
-		string longName;
+		std::string longName;
 		/// Поле обозначающее короткое имя аргумента
 		char shortName;
 		/// Поле обозначающее описание аргумента
-		string_view description;
+		std::string_view description;
+		/// Поле перечисление для типа аргумента
+		ArgumentsType type;
 	public:
 		///@brief Конструктор для аргумента если он содержит короткое и длинное имя
 		///
 		/// Создавется объект класса с коротким и длинным именем
-		Arg(char shortName, string_view longName);
+		Arg(char shortName, std::string_view longName,ArgumentsType type);
 		///@brief Конструктор для аргумента если он содержит длинное имя
 		///
 		/// Создается объект с коротким именем
-		Arg(string_view longName);
+		Arg(std::string_view longName, ArgumentsType type);
 		///@brief Виртуальный деструктор для правильной цепочки наследования и удаления объектов
 
 		virtual ~Arg();
+
 		///@brief Метод возвращающий короткое имя аргумента
 		virtual char getShortName() const;
 		///@brief Метод возвращающий короткое длинное аргумента
-		virtual string getLongName() const;
+		virtual std::string getLongName() const;
 		///@brief Метод для добавления описания аргумента
 		virtual void addDescription(
 			///Переменная описания аргумента
-			const string_view& desc
+			const std::string_view& desc
 		);
-
 		///@brief Метод возвращающий описание аргумента
-		virtual string_view getDescription() const;
+		virtual std::string_view getDescription() const;
 		///@brief Метод возвращающий флаг, определяющий определен аргумент или нет
 		virtual bool isDefined() const;
 		///@brief Метод устанавливающий флаг, определен ли аргумент.
 		virtual void setDefinded(bool flag);
+		///@brief Метод возвращающий описание аргумента
 		virtual void showHelp() const {};
+		///@brief Метод возвращающий тип аргумента
+		virtual ArgumentsType getType() const;
+		virtual args_error::ParseResult SetValue() = 0;
+		virtual args_error::ParseResult SetValue(const std::string & param) = 0;
+
 		
 	};
 
@@ -120,12 +79,15 @@ namespace args_types
 	private:
 		/// @brief поле-параметр аргумента
 		int argument;
+		args_validator::IntValidator* _validator;
 	public:
-		IntArg(char shortName, string_view longName);
-		IntArg(string_view longName);
-		void addIntArg(int arg) override;
-		int getIntArg() const;
+		IntArg(char shortName, std::string_view longName, ArgumentsType type);
+		IntArg(std::string_view longName, ArgumentsType type);
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		int getIntParam() const;
 		void showHelp() const override;
+		void SetIntValidator(args_validator::IntValidator* validator);
 
 	};
 
@@ -135,13 +97,15 @@ namespace args_types
 	private:
 		///Поле-параметр аргумента
 		bool argument;
+		args_validator::BoolValidator* _validator;
 	public:
-		BoolArg(char shortName, string_view longName);
-		BoolArg(string_view longName);
-		void addBoolArg(bool arg) override;
-		bool getBoolArg() const;
+		BoolArg(char shortName, std::string_view longName, ArgumentsType type);
+		BoolArg(std::string_view longName, ArgumentsType type);
+		bool getBoolParam() const;
 		void showHelp() const override;
-	
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		void SetBoolValidator(args_validator::BoolValidator *validator);
 
 	};
 	/// @brief Класс для строкового аргумента
@@ -149,13 +113,15 @@ namespace args_types
 	{
 	private:
 		//Поле - параметр аргумента
-		string argument;
+		std::string argument;
+		args_validator::StringValidator* _validator;
 	public:
-		StringArg(char shortName, string_view longName);
-		StringArg(string_view longName);
-		void addStringArg(string arg) override;
-		string getStringArg() const ;
+		StringArg(char shortName, std::string_view longName, ArgumentsType type);
+		StringArg(std::string_view longName, ArgumentsType type);
 		void showHelp() const override; 
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		void SetStringValidator(args_validator::StringValidator* validator);
 
 		
 	};
@@ -165,28 +131,31 @@ namespace args_types
 	{
 	private:
 		/// список целых параметров
-		vector<int> arguments;
+		std::vector<int> arguments;
+		args_validator::IntValidator* _validator;
 	public:
-
-		MultiIntArg(char shortName, string_view longName);
-		MultiIntArg(string_view longName);
-		void addIntArg(int arg) override;
+		MultiIntArg(char shortName, std::string_view longName, ArgumentsType type);
+		MultiIntArg(std::string_view longName, ArgumentsType type);
 		void showHelp() const override;
-	
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		void SetIntValidator(args_validator::IntValidator* validator);
 	};
-
 
 	/// @brief Класс для булевого мультиаргумента
 	class MultiBoolArg :public Arg
 	{
 	private:
 		/// список булевых параметров
-		vector<bool> arguments;
+		std::vector<bool> arguments;
+		args_validator::BoolValidator* _validator;
 	public:
-		MultiBoolArg(char shortName, string_view longName);
-		MultiBoolArg(string_view longName);
-		void addBoolArg(bool arg) override;
+		MultiBoolArg(char shortName, std::string_view longName, ArgumentsType type);
+		MultiBoolArg(std::string_view longName, ArgumentsType type);
 		void showHelp() const override;
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		void SetBoolValidator(args_validator::BoolValidator*validator);
 	
 	};
 
@@ -195,11 +164,14 @@ namespace args_types
 	{
 	private:
 		/// список строковых параметров
-		vector<string> arguments;
+		std::vector<std::string> arguments;
+		args_validator::StringValidator* _validator;
 	public:
-		MultiStringArg(char shortName, string_view longName);
-		MultiStringArg(string_view longName);
-		void addStringArg(string arg) override;
+		MultiStringArg(char shortName, std::string_view longName, ArgumentsType type);
+		MultiStringArg(std::string_view longName, ArgumentsType type);
 		void showHelp() const override;
+		args_error::ParseResult SetValue() override;
+		args_error::ParseResult SetValue(const std::string& param) override;
+		void SetStringValidator(args_validator::StringValidator* validator);
 	};
 }

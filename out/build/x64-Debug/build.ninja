@@ -93,6 +93,22 @@ build args_parse\CMakeFiles\args_parse.dir\args_types.cpp.obj: CXX_COMPILER__arg
   TARGET_COMPILE_PDB = args_parse\CMakeFiles\args_parse.dir\args_parse.pdb
   TARGET_PDB = args_parse\args_parse.pdb
 
+build args_parse\CMakeFiles\args_parse.dir\args_validator.cpp.obj: CXX_COMPILER__args_parse_unscanned_Debug D$:\Все$ для$ работы\source\CMDParser-main\args_parse\args_validator.cpp || cmake_object_order_depends_target_args_parse
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi /permissive- /W3 /utf-8
+  INCLUDES = -I"D:\Все для работы\source\CMDParser-main\args_parse\.."
+  OBJECT_DIR = args_parse\CMakeFiles\args_parse.dir
+  OBJECT_FILE_DIR = args_parse\CMakeFiles\args_parse.dir
+  TARGET_COMPILE_PDB = args_parse\CMakeFiles\args_parse.dir\args_parse.pdb
+  TARGET_PDB = args_parse\args_parse.pdb
+
+build args_parse\CMakeFiles\args_parse.dir\utils.cpp.obj: CXX_COMPILER__args_parse_unscanned_Debug D$:\Все$ для$ работы\source\CMDParser-main\args_parse\utils.cpp || cmake_object_order_depends_target_args_parse
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi /permissive- /W3 /utf-8
+  INCLUDES = -I"D:\Все для работы\source\CMDParser-main\args_parse\.."
+  OBJECT_DIR = args_parse\CMakeFiles\args_parse.dir
+  OBJECT_FILE_DIR = args_parse\CMakeFiles\args_parse.dir
+  TARGET_COMPILE_PDB = args_parse\CMakeFiles\args_parse.dir\args_parse.pdb
+  TARGET_PDB = args_parse\args_parse.pdb
+
 
 # =============================================================================
 # Link build statements for STATIC_LIBRARY target args_parse
@@ -101,7 +117,7 @@ build args_parse\CMakeFiles\args_parse.dir\args_types.cpp.obj: CXX_COMPILER__arg
 #############################################
 # Link the static library args_parse\args_parse.lib
 
-build args_parse\args_parse.lib: CXX_STATIC_LIBRARY_LINKER__args_parse_Debug args_parse\CMakeFiles\args_parse.dir\args.cpp.obj args_parse\CMakeFiles\args_parse.dir\args_types.cpp.obj
+build args_parse\args_parse.lib: CXX_STATIC_LIBRARY_LINKER__args_parse_Debug args_parse\CMakeFiles\args_parse.dir\args.cpp.obj args_parse\CMakeFiles\args_parse.dir\args_types.cpp.obj args_parse\CMakeFiles\args_parse.dir\args_validator.cpp.obj args_parse\CMakeFiles\args_parse.dir\utils.cpp.obj
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:x64
   OBJECT_DIR = args_parse\CMakeFiles\args_parse.dir
