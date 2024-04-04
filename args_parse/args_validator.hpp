@@ -13,7 +13,7 @@ namespace args_validator
 		/**
 		* @brief Виртуальный метод для проверки целых чисел
 		*/
-		virtual	[[discard]] args_error::ParseResult CheckInt(
+			[[discard]]virtual args_error::ParseResult CheckInt(
 			const std::string& fresh_parameter///<Валидируемая строка
 		) = 0;
 	};
