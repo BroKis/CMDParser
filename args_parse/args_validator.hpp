@@ -13,8 +13,7 @@ namespace args_validator
 		/**
 		* @brief Виртуальный метод для проверки целых чисел
 		*/
-		[[discard]]
-		virtual args_error::ParseResult CheckInt(
+		virtual	[[discard]] args_error::ParseResult CheckInt(
 			const std::string& fresh_parameter///<Валидируемая строка
 		) = 0;
 	};
@@ -27,8 +26,8 @@ namespace args_validator
 		/**
 		* @brief Виртуальный метод для проверки целых чисел в диапазоне
 		*/
-		[[discard]]
-		args_error::ParseResult CheckInt(const std::string& fresh_parameter) override;
+		
+		[[discard]]args_error::ParseResult CheckInt(const std::string& fresh_parameter) override;
 	};
 
 	/**
@@ -41,8 +40,8 @@ namespace args_validator
 		/**
 		* @brief Виртуальный метод для проверки строк
 		*/
-		[[discard]]
-		virtual args_error::ParseResult CheckString(const std::string& fresh_parameter) = 0;
+		
+		[[discard]]virtual args_error::ParseResult CheckString(const std::string& fresh_parameter) = 0;
 
 	};
 
@@ -52,11 +51,11 @@ namespace args_validator
 	class NormalStringValidator : public StringValidator
 	{
 	public:
-		[[discard]]
+		
 		/**
 		* @brief Метод для проверки строк в нормальной форме без специальных символов
 		*/
-		args_error::ParseResult CheckString(const std::string& fresh_parameter) override;
+		[[discard]]args_error::ParseResult CheckString(const std::string& fresh_parameter) override;
 	};
 
 	/**
@@ -68,8 +67,8 @@ namespace args_validator
 		/**
 		* @brief Метод для проверки строк на соответствие формату текстовых файлов
 		*/
-		[[discard]]
-		args_error::ParseResult CheckString(const std::string& fresh_parameter) override;
+		
+		[[discard]args_error::ParseResult] CheckString(const std::string& fresh_parameter) override;
 	};
 	/**
 	* @brief Базовый класс-валидатор для валидирования булевых значений
@@ -81,8 +80,8 @@ namespace args_validator
 		/**
 		* @brief Виртуальный метод для проверки строк на соответствие значению истины/ложь
 		*/
-		[[discard]]
-		virtual args_error::ParseResult CheckBool(const std::string& fresh_parameter) = 0;
+		
+		[[discard]]virtual args_error::ParseResult CheckBool(const std::string& fresh_parameter) = 0;
 	};
 
 	/**
@@ -94,8 +93,8 @@ namespace args_validator
 		/**
 		* @brief Метод для проверки строк на соответствие значению истины/ложь
 		*/
-		[[discard]]
-		args_error::ParseResult CheckBool(const std::string& fresh_parameter) override;
+		
+		[[discard]] args_error::ParseResultCheckBool(const std::string& fresh_parameter) override;
 
 	};
 
@@ -110,8 +109,8 @@ namespace args_validator
 		/**
 		* @brief Метод для проверки строк на соответствие аргументов для парсинга 
 		*/
-		[[discard]]
-		virtual args_error::ParseResult CheckInput(const std::string& fresh_parameter) = 0;
+		
+		[[discard]]virtualargs_error::ParseResult CheckInput(const std::string& fresh_parameter) = 0;
 	};
 	/**
 	* @brief Класс-валидатор для валидирования поступающих аргументов для парсинга
@@ -122,8 +121,8 @@ namespace args_validator
 		/**
 		* @brief Метод для проверки строк на соответствие аргументов для парсинга
 		*/
-		[[discard]]
-		args_error::ParseResult CheckInput(const std::string& fresh_parameter) override;
+		
+		[[discard]]args_error::ParseResult CheckInput(const std::string& fresh_parameter) override;
 	};
 
 	

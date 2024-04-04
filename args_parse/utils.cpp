@@ -14,7 +14,7 @@ namespace utils
         else if (lowercaseStr == "false" || lowercaseStr == "0") {
             return false;
         }
-        // Если значение не является числом или допустимым значением true/false, возвращает false
+        // Р•СЃР»Рё Р·РЅР°С‡РµРЅРёРµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ С‡РёСЃР»РѕРј РёР»Рё РґРѕРїСѓСЃС‚РёРјС‹Рј Р·РЅР°С‡РµРЅРёРµРј true/false, РІРѕР·РІСЂР°С‰Р°РµС‚ false
         return false;
 	}
 
