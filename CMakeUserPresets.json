@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "D:\\AllForWork\\source\\CMDParser-nextgen_2.1\\build\\generators\\CMakePresets.json"
+    ]
+}

@@ -1,60 +1,61 @@
 #include <args_parse/args.hpp>
+#include <args_parse/utils.hpp>
+#include <iostream>
 
 int main(int argc, const char ** argv)
 {
     args_parse::EatParams(argc, argv);
     args_parse::ArgsParser parser;
+    args_validator::NormalParserValidator validator;
+    parser.SetValidator(&validator);
 
-    Arg* arg = new args_types::IntArg('a', "append");
-    Arg* arg2 = new args_types::IntArg('s', "substriction");
-    Arg* arg3 = new args_types::StringArg('i', "input");
-    Arg* arg4 = new args_types::StringArg('o', "output");
-    Arg* arg5 = new args_types::StringArg('y', "yes");
-    Arg* arg6 = new args_types::MultiBoolArg('v', "verbose");
+    args_types::IntArg intArg =  args_types::IntArg('a', "additional", args_types::ArgumentsType::Int);
+    args_validator::IntInRangeValidator validator1;
+    intArg.SetIntValidator(&validator1);
 
-    parser.add(arg);
-    parser.add(arg2);
-    parser.add(arg3);
-    parser.add(arg4);
-    parser.add(arg5);
-    parser.add(arg6);
 
-    if (parser.parse(argc, argv))
+    args_types::StringArg stringArg = args_types::StringArg('s', "string", args_types::ArgumentsType::String);
+    args_validator::NormalStringValidator validator2;
+    stringArg.SetStringValidator(&validator2);
+
+    args_types::BoolArg boolArg = args_types::BoolArg('f', "flag", args_types::ArgumentsType::Bool);
+    args_validator::NormalBoolValidator validator3;
+    boolArg.SetBoolValidator(&validator3);
+    
+
+    parser.add(&intArg);
+    parser.add(&stringArg);
+    parser.add(&boolArg);
+
+    if (const auto result = parser.parse(argc, argv); result.isOk())
     {
-        if (arg->isDefined())
+        std::cout<<parser.GetHelp()<<std::endl;
+       
+        if (intArg.isDefined())
         {
-            arg->showHelp();
+            std::cout << intArg.getLongName() << ":" << intArg.GetValue() << std::endl;
         }
-        if (arg2->isDefined())
+       
+        if (stringArg.isDefined())
         {
-            arg2->showHelp();
+            std::cout << stringArg.getLongName() << ":" << stringArg.GetValue() << std::endl;
         }
-        if (arg3->isDefined())
+        
+        if (boolArg.isDefined())
         {
-            arg3->showHelp();
-        }
-        if (arg4->isDefined())
-        {
-            arg4->showHelp();
-        }
-        if (arg5->isDefined())
-        {
-            arg5->showHelp();
-        }
-        if (arg6->isDefined())
-        {
-            arg6->showHelp();
+            std::cout << boolArg.getLongName() << ":" << utils::boolToString(boolArg.GetValue()) << std::endl;
         }
     }
+    else
+    {
+        std::cerr << result.Error().description << std::endl;
+        return 1;
+    }
 
-    parser.~ArgsParser();
-    delete arg;
-    delete arg2;
-    delete arg3;
-    delete arg4;
-    delete arg5;
-    delete arg6;
+   
+    return 0;
 
+   
 
 }
 

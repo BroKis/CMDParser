@@ -1,14 +1,10 @@
 #include "args.hpp"
+#include "utils.hpp"
 #include <iostream>
 #include <algorithm>
 namespace args_parse
 {
-	
-	ArgsParser::ArgsParser() {};
-	ArgsParser::~ArgsParser() {
-		Args.clear();
-	}
-	const string degree = "=";
+	std::string extractable = "=";
 
 	void EatParams(int argc, const char** argv)
 	{
@@ -19,168 +15,141 @@ namespace args_parse
 	}
 
 
-
-	bool isInteger(const std::string& s) {
-		if (s.empty())
-			return false;
-
-		
-		size_t i = 0;
-		if (s[i] == '+' || s[i] == '-')
-			++i;
-
-		for (; i < s.length(); ++i) {
-			if (!std::isdigit(s[i]))
-				return false;
-		}
-
-		return true;
-	}
-
-
-	bool ArgsParser::tryParse(int index,string parseable_arg)
+	args_error::ParseResult ArgsParser::tryParse(const std::string& parseable_arg)
 	{
-		string result;
-		if (parseable_arg == "--")
-		{
-			result += "It is impossible to parse the string.It is assumed that there is a short command:";
-			cout << result + parseable_arg << endl;
-			return false;
-		}
-		else if (parseable_arg == "-")
-		{
-			result += "Argument parsing error.It is assumed that there is a long command:";
-			cout << result + parseable_arg << endl;
-			return false;
-		}
-		else if (isInteger(parseable_arg))
-		{
-			result += "Argument parsing error.A single input of a numeric argument is assumed:";
-			cout << result + "["<<index<<"]"<<parseable_arg << endl;
-			return false;
-		}
-		return true;
-		
+		return _validator->CheckInput(parseable_arg);
 	}
 
-	
-
-	bool isBoolean(const std::string& s) {
-		std::string lowercaseStr;
-		for (char c : s) {
-			lowercaseStr += std::tolower(c);
-		}
-
-		return lowercaseStr == "true" || lowercaseStr == "false";
+	std::string ArgsParser::extractParameter(const std::string& source, std::string& extractable)
+	{
+		auto it = std::search(source.begin(), source.end(),
+			extractable.begin(), extractable.end());
+		std::string argument(it + 1, source.end());
+		return argument;
 	}
-	void ArgsParser::setArguments(string temp_arg, Arg* arg)
+
+	args_error::ParseResult ArgsParser::setParamsInLongNameWithEqualOrWithout(const std::string& source, Arg* arg, const char** argv, int& index)
+	{
+		if (source.find('=') == std::string::npos) return arg->SetValue(argv[++index]);
+		return arg->SetValue(extractParameter(source, extractable));
+	}
+
+	args_error::ParseResult ArgsParser::setParamsInShortNameWithEqual(const std::string& source, Arg* arg)
+	{
+		if (arg->getType() == ArgumentsType::Empty)
+			return args_error::ParseResult::Fail(args_error::Error{ "The argument to which you are trying to assign the parameter is empty" });
+		return arg->SetValue(extractParameter(source, extractable));
+	}
+
+	args_error::ParseResult ArgsParser::setParamsInShortNameWithoutEqual(const std::string& source, Arg* arg,const char** argv, int& index)
 	{
 
-		if (isInteger(temp_arg)) {
-			arg->addIntArg(stoi(temp_arg));
-
-		}
-		else if (isBoolean(temp_arg))
+		if (source.find(arg->getShortName()) == source.size() - 1 && arg->getType() != ArgumentsType::Empty)
 		{
-			bool flag = temp_arg == "true" ? true : false;
-			arg->addBoolArg(flag);
+			return arg->SetValue(argv[++index]);
 		}
-		else
+		if (arg->getType() == ArgumentsType::Empty)
 		{
-			arg->addStringArg(temp_arg);
+			return arg->SetValue();
 		}
+		std::string delimeter(1, arg->getShortName());
+		return arg->SetValue(extractParameter(source, delimeter));
 	}
+
+	args_error::ParseResult ArgsParser::parseLongCommandArgument(const std::string& source, const char** argv, int& index)
+	{
+		for (const auto& arg : Args)
+		{
+			std::string findArgument = utils::extractShortFormOfLongName(source);
+			if (arg->getLongName() == findArgument || (arg->getLongName().find(findArgument) != std::string::npos && !arg->isDefined()))
+			{
+				if (const auto result = setParamsInLongNameWithEqualOrWithout(source, arg, argv, index); !result.isOk()) return result;
+				if (!arg->isDefined()) arg->setDefinded(true);
+			}
+		}
+		return args_error::ParseResult::Ok();
+
+	}
+
+	args_error::ParseResult ArgsParser::parseShortCommandArgument(const std::string& source, const char** argv, int& index)
+	{
+		for (const auto& arg : Args)
+		{
+			if (source.find(arg->getShortName()) != std::string::npos)
+			{
+				if (source.find('=') != std::string::npos)
+				{
+					if (const auto result = setParamsInShortNameWithEqual(source, arg); !result.isOk()) return result;
+				}
+				else
+				{
+					if (const auto result = setParamsInShortNameWithoutEqual(source, arg, argv, index);  !result.isOk()) return result;
+				}
+				if (!arg->isDefined()) arg->setDefinded(true);
+			}
+		}
+		return args_error::ParseResult::Ok();
+	}
+	args_types::Arg* ArgsParser::getArgumentFromVector(int index) const
+	{
+		if (index < Args.size())
+		{
+			return Args[index];
+		}
+		return nullptr;
+	}
+
+	void ArgsParser::SetValidator(args_validator::ParserValidator* validator)
+	{
+		_validator = validator;
+	}
+
+
 	void ArgsParser::add(Arg* arg)
 	{
 		Args.push_back(arg);
 	}
-	string boolToString(bool value) {
-		return value ? "true" : "false";
-	}
-	
-	
-	
-	bool ArgsParser::parse(int argc, const char** argv)
+
+	args_error::ParseResult ArgsParser::parse(int argc, const char** argv)
 	{
 		for (int i = 1; i < argc; i++)
 		{
-			string temp_arg = argv[i];
-			if (tryParse(i,temp_arg))
+			std::string temp_arg = argv[i];
+			if (const auto result = tryParse(temp_arg); result.isOk())
 			{
-				if (temp_arg.find("--") != string::npos)
+				if (temp_arg.find("--") == 0)
 				{
-					for (const auto& arg : Args)
-					{
-						if (temp_arg.find(arg->getLongName()) != string::npos)
-						{
-							
-							if (temp_arg.find('=') != string::npos)
-							{
-							
-								auto it = std::search(temp_arg.begin(), temp_arg.end(),
-									degree.begin(), degree.end());
-								string argument(it+1, temp_arg.end());
-								setArguments(argument, arg);
-								
-							}
-							else
-							{
-								setArguments(argv[++i], arg);
-							}
-						
-							if (arg->isDefined() == false) { arg->setDefinded(true); }
-							break;
-						}
-					}
+					if (const auto result = parseLongCommandArgument(temp_arg, argv, i); !result.isOk()) return result;
 				}
-				else if (temp_arg.find("-") != string::npos)
+				else if (temp_arg.find("-") == 0)
 				{
-						for (const auto& arg : Args)
-						{
-							if (temp_arg.find(arg->getShortName()) != string::npos)
-							{
-								size_t pos = temp_arg.find(degree);
-								char leftChar = (pos > 0) ? temp_arg[pos - 1] : '\0';
-								if (temp_arg.find('=') != string::npos && leftChar == arg->getShortName())
-								{
-									
-									auto it = std::search(temp_arg.begin(), temp_arg.end(),
-										degree.begin(), degree.end());
-									string argument(it+1, temp_arg.end());
-									setArguments(argument, arg);
-									
-								}
-								else
-								{
-									
-									if (temp_arg.size() > 0)
-									{
-										setArguments(temp_arg, arg);
-									}
-									else
-									{
-										setArguments(argv[++i], arg);
-									}
-								}
-
-								if (arg->isDefined() == false) { arg->setDefinded(true); }
-								break;
-							}
-						}
-				}
-				else
-				{
-					string result = "Argument parsing error.It is assumed to enter a command or a single input of a string argument:";
-					cout << result + "[" << i << "]" << temp_arg << endl;
-					return false;
+					if (const auto result = parseShortCommandArgument(temp_arg, argv, i); !result.isOk())return result;
 				}
 			}
 			else
 			{
-				return false;
+				return result;
 			}
 		}
-		return true;
+		return args_error::ParseResult::Ok();
+	}
+
+	std::string ArgsParser::GetHelp() const
+	{
+		std::string result = "";
+
+		for (const auto& arg : Args) {
+			result += "-";
+			result += arg -> getShortName();
+			result += " --";
+			result += arg->getLongName();
+			result += " | ";
+			result += arg-> getDescription();
+			result += " | ";
+			result += utils::enumToString(arg->getType());
+			result += "\n";
+		}
+		return result;
 	}
 }/* namespace args_parse */
 
