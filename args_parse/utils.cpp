@@ -37,15 +37,39 @@ namespace utils
         }
         return "";
     }
-    std::string enumToString(args_types::ArgumentsType type)
+
+    std::chrono::microseconds chronoToMicroseconds(long long value, std::string &unit)
     {
-        switch (type)
-        {
-        case args_types::ArgumentsType::Int:  return "Int";
-        case args_types::ArgumentsType::Bool:   return "Bool";
-        case args_types::ArgumentsType::String: return "String";
-        case args_types::ArgumentsType::Empty: return "Empty";
-        default: return "[Unknown Argument Type]";
+        std::chrono::microseconds ms;
+        if (unit == "d") {
+            auto seconds = std::chrono::seconds(value);
+            ms = std::chrono::microseconds(seconds);
         }
+        else if (unit == "h") {
+            auto seconds = std::chrono::seconds(value);
+            ms = std::chrono::microseconds(seconds);
+        }
+        else if (unit == "m") {
+            auto seconds = std::chrono::seconds(value);
+            ms = std::chrono::microseconds(seconds);
+        }
+        else if (unit == "s") {
+            auto seconds = std::chrono::seconds(value);
+            ms = std::chrono::microseconds(seconds);
+        }
+        else if (unit == "ms") {
+            auto milliseconds = std::chrono::milliseconds(value);
+            ms = std::chrono::microseconds(milliseconds);
+        }
+        else if (unit == "us") {
+            ms = std::chrono::microseconds(value);
+        }
+        else if (unit == "ns") {
+            auto nanoseconds = std::chrono::milliseconds(value);
+            ms = std::chrono::microseconds(nanoseconds);
+        }
+        return ms;
     }
 }
+   
+    
