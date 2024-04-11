@@ -4,6 +4,6 @@
         "conan": {}
     },
     "include": [
-        "D:\\AllForWork\\source\\CMDParser-nextgen_2.1\\build\\generators\\CMakePresets.json"
+        "D:\\AllForWork\\source\\template_args_parser\\build\\generators\\CMakePresets.json"
     ]
 }

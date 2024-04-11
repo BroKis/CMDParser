@@ -1,4 +1,4 @@
-# В современном CMake рекомендуется сразу задавать нужную версию CMake.
+﻿# В современном CMake рекомендуется сразу задавать нужную версию CMake.
 cmake_minimum_required(VERSION 3.28)
 
 # Говорим CMake что за проект.
@@ -25,14 +25,15 @@ if (MSVC)
     add_compile_options(/utf-8)
 endif()
 
+# Подключаем подпроекты.
+add_subdirectory(args_parse)
+add_subdirectory(main)
+
 # Нам нужен Catch2.
 # ПРИМЕЧАНИЕ: опция CONFIG здесь нужна обязательно, без нее при компиляции
 # под Windows будут недоступны заголовочные файлы Catch2.
 find_package(Catch2 CONFIG REQUIRED)
 
-# Подключаем подпроекты.
-add_subdirectory(args_parse)
-add_subdirectory(demo)
 
 # Разрешаем поддержку unit-тестов.
 include(CTest)
@@ -41,4 +42,3 @@ enable_testing()
 
 # Подключаем проект с тестами.
 add_subdirectory(test)
-

@@ -30,12 +30,14 @@ namespace args_error
 		*/
 		static ParseResult Fail(
 			Error error///<Поле для описания ошибки
-		) { return ParseResult{ std::move(error) }; };
+		) {
+			return ParseResult{ std::move(error) };
+		};
 
 		/**
 		*@brief Метод который возвращает истинное значение, если ошибки нет
 		*/
-		[[nodiscard]]bool isOk() const { return !this->error.has_value(); };
+		[[nodiscard]] bool isOk() const { return !this->error.has_value(); };
 
 
 		/**
