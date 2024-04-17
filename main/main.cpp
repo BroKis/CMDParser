@@ -8,9 +8,7 @@
 int main(int argc, const char** argv) {
     
 
-    args_parser::EatParams(argc, argv);
-
-    args_parser::ArgsParser<std::string> parser;
+    args_parser::ArgsParser parser;
     args_validator::NormalParserValidator<std::string> validator;
     parser.SetValidator(&validator);
 

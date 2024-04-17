@@ -18,7 +18,7 @@ namespace abstract_arg
 		/// Указывает короткое имя аргумента
 		char shortName{};
 		/// Указывает описание аргумента
-		std::string_view description{};
+		std::string description{};
 		/// Указывает требуется ли параметр
 		bool requiredParameter = false;
 	public:
@@ -26,35 +26,35 @@ namespace abstract_arg
 		AbstractArg(std::string_view longName, bool requiredParameter): longName(longName), requiredParameter(requiredParameter) {};
 		virtual ~AbstractArg() = default;
 		/// Геттер для shortName
-		virtual char getShortName() const
+		char getShortName() const
 		{
 			return shortName;
 		}
 		/// Геттер для longName
-		virtual std::string getLongName() const
+		std::string getLongName() const
 		{
 			return longName;
 		}
 		/// Сеттер для description
-		virtual void addDescription(const std::string_view& desc) {
+		virtual void addDescription(const std::string& desc) {
 			description = desc;
 		}
 		/// Геттер для description
-		virtual std::string_view getDescription() const 
+		std::string_view getDescription() const 
 		{
 			return description;
 		};
 		/// Геттер для isDefine
-		[[nodiscard]]virtual bool isDefined() const
+		[[nodiscard]]bool isDefined() const
 		{
 			return isDefine;
 		}
 		/// Сеттер для isDefine
-		virtual void setDefinded(bool flag) {
+		void setDefinded(bool flag) {
 			isDefine = flag;
 		}
 		/// Геттер для requiredParameter
-		[[nodiscard]]virtual bool isParamRequired() const {
+		[[nodiscard]]bool isParamRequired() const {
 			return requiredParameter;
 		}
 		/**

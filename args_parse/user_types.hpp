@@ -27,9 +27,8 @@ namespace user_types
 	* @param[in] userType ссылка на объект
 	* @param[in] parameter строка параметра для парсинга
 	*/
-	template<typename T>
-	std::enable_if_t<std::is_same_v<T, ChronoCloack>, args_error::ParseResult>
-	ParseUserType(T& userType, const std::string& parameter)
+	
+	 args_error::ParseResult ParseUserType(ChronoCloack& userType, const std::string& parameter)
 	{
 
 		std::stringstream ss{ parameter };

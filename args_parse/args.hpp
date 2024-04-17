@@ -7,25 +7,13 @@
 #include <string>
 namespace args_parser
 {
-	std::string extractable = "=";
+	
 
-	/**@brief Функция для обработки аргументов командной строки.
-	*@param[in] argc количество аргументов командной строки
-	*@param[in] argv поток аргументов командной строки
-	*/
-	void EatParams(
-		int argc,
-		const char** argv)
-	{
-		for (int i = 0; i < argc; ++i)
-		{
-			std::cout << "[" << i << "]: '" << argv[i] << "'" << std::endl;
-		}
-	}
+	
 	/**
 	*@brief Парсер аргументов командной строки
 	*/
-	template<typename T = std::string>
+	
 	class ArgsParser
 	{
 
@@ -53,11 +41,11 @@ namespace args_parser
 				{
 					if (temp_arg.find("--") == 0)
 					{
-						if (const auto result = parseLongCommandArgument(temp_arg, argv, i); !result.isOk()) return result;
+						if (const auto result = parseLongCommandArgument(argc,temp_arg, argv, i); !result.isOk()) return result;
 					}
 					else if (temp_arg.find("-") == 0)
 					{
-						if (const auto result = parseShortCommandArgument(temp_arg, argv, i); !result.isOk())return result;
+						if (const auto result = parseShortCommandArgument(argc,temp_arg, argv, i); !result.isOk())return result;
 					}
 				}
 				else
@@ -84,7 +72,7 @@ namespace args_parser
 		/** @brief Метод, устанавливающий валидатор парсера командной строки*/
 		void SetValidator(
 			/// валидатор парсера командной строки
-			args_validator::Validator<T>* validator
+			args_validator::Validator<std::string>* validator
 		)
 		{
 			_validator = validator;
@@ -119,7 +107,7 @@ namespace args_parser
 			/// строка-источник
 			const std::string& source,
 			/// разделитель
-			std::string& extractable)
+			const std::string& extractable)
 		{
 			auto it = std::search(source.begin(), source.end(),
 				extractable.begin(), extractable.end());
@@ -129,18 +117,24 @@ namespace args_parser
 
 		/** @brief Метод, устанавливающий значение для длинной команды со знаком = или без*/
 		virtual args_error::ParseResult setParamsInLongNameWithEqualOrWithout(
+			/// количество аргументов
+			int argc,
 			/// строка источник
 			const std::string& source,
 			/// аргумент которому присваивается значение
-			abstract_arg::AbstractArg* arg,
+			abstract_arg::AbstractArg&arg,
 			/// масств аргументов
 			const char** argv,
 			/// индекс аргумента командной строки
 			int& index
 		) 
 		{
-			if (source.find('=') == std::string::npos) return arg->SetValue(argv[++index]);
-			return arg->SetValue(extractParameter(source, extractable));
+			if (source.find('=') == std::string::npos)
+			{
+				if(index < argc-1) return arg.SetValue(argv[++index]);
+				return args_error::ParseResult::Fail(args_error::Error{ "Parameter is required near:" + arg.getLongName()});
+			}
+			return arg.SetValue(extractParameter(source, "="));
 		}
 
 		/** @brief Метод, устанавливающий значение для коротокй команды со знаком =*/
@@ -149,39 +143,44 @@ namespace args_parser
 			/// строка-источник
 			const std::string& source,
 			/// аргумент, которому устанавливается значение
-			abstract_arg::AbstractArg* arg
+			abstract_arg::AbstractArg&arg
 		)
 		{
-			if (!arg->isParamRequired())
+			if (!arg.isParamRequired())
 				return args_error::ParseResult::Fail(args_error::Error{ "The argument to which you are trying to assign the parameter is empty" });
-			return arg->SetValue(extractParameter(source, extractable));
+			return arg.SetValue(extractParameter(source, "="));
 		}
 
 		/** @brief Метод, устанавливающий значение для коротокй команды без знака =*/
 		virtual args_error::ParseResult setParamsInShortNameWithoutEqual(
+			/// количество аргументов
+			int argc,
 			/// строка-источник
 			const std::string& source,
 			/// аргумент, которому присваивают значение
-			abstract_arg::AbstractArg* arg,
+			abstract_arg::AbstractArg&arg,
 			/// массив аргументов
 			const char** argv,
 			/// индекс аргумента
 			int& index)
 		{
-			if (source.find(arg->getShortName()) == source.size() - 1 && arg->isParamRequired())
+			if (source.find(arg.getShortName()) == source.size() - 1 && arg.isParamRequired())
 			{
-				return arg->SetValue(argv[++index]);
+				if (index < argc-1) return arg.SetValue(argv[++index]);
+				return args_error::ParseResult::Fail(args_error::Error{ "Out of range arguments" });
 			}
-			if (!arg->isParamRequired())
+			if (!arg.isParamRequired())
 			{
-				return arg->SetValue();
+				return arg.SetValue();
 			}
-			std::string delimeter(1, arg->getShortName());
-			return arg->SetValue(extractParameter(source, delimeter));
+			std::string delimeter(1, arg.getShortName());
+			return arg.SetValue(extractParameter(source, delimeter));
 		}
 
 		/** @brief Метод, парсящий длинную команду*/
 		virtual args_error::ParseResult parseLongCommandArgument(
+			/// количество аргументов командной строки
+			int argc,
 			/// строка-источник
 			const std::string& source,
 			/// массив аргументов
@@ -189,12 +188,12 @@ namespace args_parser
 			/// индекс аргумента
 			int& index)
 		{
-			for (const auto& arg : Args)
+			for (auto arg : Args)
 			{
 				std::string findArgument = utils::extractShortFormOfLongName(source);
 				if (arg->getLongName() == findArgument || (arg->getLongName().find(findArgument) != std::string::npos && !arg->isDefined()))
 				{
-					if (const auto result = setParamsInLongNameWithEqualOrWithout(source, arg, argv, index); !result.isOk()) return result;
+					if (const auto result = setParamsInLongNameWithEqualOrWithout(argc,source, *arg, argv, index); !result.isOk()) return result;
 					if (!arg->isDefined()) arg->setDefinded(true);
 				}
 			}
@@ -203,6 +202,8 @@ namespace args_parser
 
 		/** @brief Метод, парсящий короткую команду */
 		virtual args_error::ParseResult parseShortCommandArgument(
+			///Количество аргументов
+			int argc,
 			/// короткая команда
 			const std::string& source,
 			/// массив аргументов
@@ -211,17 +212,17 @@ namespace args_parser
 			int& index
 		)
 		{
-			for (const auto& arg : Args)
+			for (auto arg : Args)
 			{
 				if (source.find(arg->getShortName()) != std::string::npos)
 				{
 					if (source.find('=') != std::string::npos)
 					{
-						if (const auto result = setParamsInShortNameWithEqual(source, arg); !result.isOk()) return result;
+						if (const auto result = setParamsInShortNameWithEqual(source,*arg); !result.isOk()) return result;
 					}
 					else
 					{
-						if (const auto result = setParamsInShortNameWithoutEqual(source, arg, argv, index);  !result.isOk()) return result;
+						if (const auto result = setParamsInShortNameWithoutEqual(argc,source, *arg, argv, index);  !result.isOk()) return result;
 					}
 					if (!arg->isDefined()) arg->setDefinded(true);
 				}
@@ -232,7 +233,7 @@ namespace args_parser
 
 
 		/// Поле хранящее ссылку для валидатора парсера
-		args_validator::Validator<T>* _validator{};
+		args_validator::Validator<std::string>* _validator{};
 		/// Поле хрянящее список аргументов
 		std::vector<abstract_arg::AbstractArg*> Args{};
 	};

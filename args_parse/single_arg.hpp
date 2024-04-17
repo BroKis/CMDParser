@@ -14,18 +14,17 @@ namespace single_arg
 	{
 	private:
 		/// Поле, хранящее значение аргумента если парсинг успешный
-		T parameter;
+		T parameter{};
 		/// Поле хранящее ссылку на валидатор для проверки значений
 		args_validator::Validator<K>* _validator{};
 	public:
 		SingleArgument(char shortName, std::string_view longName, bool requiredParameter) : AbstractArg(shortName, longName, requiredParameter) {};
 		SingleArgument(std::string_view longName, bool requiredParameter) : AbstractArg(longName, requiredParameter) {};
 
-
 		args_error::ParseResult SetValue(const std::string& str) override
 		{
-			if (auto result = _validator->check(str); !result.isOk())return result;
 			if (auto result = user_types::ParseUserType(parameter, str); !result.isOk()) return result;
+			if (auto result = _validator->check(str); !result.isOk())return result;
 			return args_error::ParseResult::Ok();
 		}
 
