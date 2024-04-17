@@ -1,9 +1,0 @@
-{
-    "version": 4,
-    "vendor": {
-        "conan": {}
-    },
-    "include": [
-        "D:\\AllForWork\\source\\template_args_parser\\build\\generators\\CMakePresets.json"
-    ]
-}
