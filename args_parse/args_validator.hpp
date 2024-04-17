@@ -100,6 +100,23 @@ namespace args_validator
 	};
 
 	/**
+	*@brief Класс валидатора названия файлов
+	*
+	*/
+	template<typename T>
+	class NormalPathValidator : public Validator<T>
+	{
+	private:
+	public:
+		[[nodiscard]] args_error::ParseResult check(const T& v) override {
+			static std::regex pattern("^([A-Za-z]:\\\\)((?:.*\\\\)?)$");
+			if (std::regex_match(v, pattern)) { return args_error::ParseResult::Ok(); }
+			return args_error::ParseResult::Fail(args_error::Error{ "The string is not the name of the file. Incorrect value:" + v });
+		}
+	};
+
+
+	/**
 	*@brief Класс валидатора для парсера
 	*
 	*/
@@ -131,4 +148,4 @@ namespace args_validator
 		}
 	};
 
-}
+}/*namespace args_validator*/

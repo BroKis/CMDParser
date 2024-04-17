@@ -7,52 +7,40 @@
 #include <iostream>
 #include <memory>
 
+
 TEST_CASE("IntArg", "[all]")
 {
-    args_parser::ArgsParser<std::string> parser{};
+    args_parser::ArgsParser parser{};
     args_validator::NormalParserValidator<std::string> parserValidator{};
     parser.SetValidator(&parserValidator);
 
     single_arg::SingleArgument<int, int> intArg{ 'a', "additional", true };
     args_validator::InRangeValidator<int> rangeValidator{ -5,5 };
     intArg.setValidator(&rangeValidator);
-
-
     parser.add(&intArg);
 
     std::cout << "IntArg" << std::endl;
 
     SECTION("Correct parse short argument with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=4";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
-
     }
 
     SECTION("Argument greater then right border of range")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=6";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=6" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
-
     }
 
     SECTION("Argument lether then left border of range")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=-6";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=-6" };
+        auto result = parser.parse((int)argsv.size(),&argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
 
@@ -60,24 +48,16 @@ TEST_CASE("IntArg", "[all]")
 
     SECTION("Correct parse short argument without equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a4";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
     }
     SECTION("Correct parse short argument without equal and next parameter ")
     {
-        const char** argv = new const char* [3];
-        const char* str = "-a";
-        const char* str2 = "4";
-        argv[1] = str;
-        argv[2] = str2;
-
-        const auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","-a","4"};
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
@@ -85,12 +65,8 @@ TEST_CASE("IntArg", "[all]")
 
     SECTION("Correct parse short argument with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=4";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
@@ -98,46 +74,31 @@ TEST_CASE("IntArg", "[all]")
 
     SECTION("Incorrect parse wrong argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "------";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","------------" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
     SECTION("Incorrect parse short argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "---a=4";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","---a=4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
 
     SECTION("Incorrect parse number")
     {
-        const char** argv = new const char* [2];
-        const char* str = "458";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","458" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
 
     SECTION("Correct parse long argument with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional=4";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional=4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
@@ -145,24 +106,16 @@ TEST_CASE("IntArg", "[all]")
 
     SECTION("Correct parse long argument without equal and next parameter ")
     {
-        const char** argv = new const char* [3];
-        const char* str = "--additional";
-        const char* str2 = "4";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional","4"};
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
     }
     SECTION("Incorrect parse short argument with equal and empty parameter")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
 
@@ -170,37 +123,24 @@ TEST_CASE("IntArg", "[all]")
 
     SECTION("Incorrect parse long argument with equal and empty parameter")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional=";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional=" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
 
     }
     SECTION("Incorrect parse")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional4";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
-
     }
     SECTION("Parse short form of long name")
     {
-        const char** argv = new const char* [3];
-        const char* str = "--add";
-        const char* str2 = "4";
-        argv[1] = str;
-        argv[2] = str2;
 
-        auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","--add","4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
@@ -209,7 +149,7 @@ TEST_CASE("IntArg", "[all]")
 
 TEST_CASE("Bool Arg", "[all]")
 {
-    args_parser::ArgsParser<std::string> parser{};
+    args_parser::ArgsParser parser{};
     args_validator::NormalParserValidator<std::string> parserValidator{};
     parser.SetValidator(&parserValidator);
 
@@ -222,65 +162,48 @@ TEST_CASE("Bool Arg", "[all]")
     std::cout << "BoolArg" << std::endl;
     SECTION("Parse normal with true parameter with equal ")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-r=true";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-r=true" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse normal with false parameter with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-r=true";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-r=false" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse normal with zero parameter without equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-r0";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-r0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse normal with one parameter without equal")
     {
-        const char** argv = new const char* [3];
-        const char* str = "-r";
-        const char* str2 = "1";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","-r1" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
     SECTION("Parse incorrect argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-r4";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-r4" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
+        REQUIRE(result);
 
     }
 }
 
 TEST_CASE("String Arg", "[all]")
 {
-    args_parser::ArgsParser<std::string> parser{};
+    args_parser::ArgsParser parser{};
     args_validator::NormalParserValidator<std::string> parserValidator{};
     parser.SetValidator(&parserValidator);
 
@@ -293,67 +216,48 @@ TEST_CASE("String Arg", "[all]")
     std::cout << "StringArg" << std::endl;
     SECTION("Parse short argument with equal ")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-o=output.txt";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-o=output.txt" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse short argument without equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-ooutput.txt";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-ooutput.txt" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse short argument with param how next argument")
     {
-        const char** argv = new const char* [3];
-        const char* str = "-o";
-        const char* str2 = "output.txt";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","-o","output.txt" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Parse short form of long name")
     {
-        const char** argv = new const char* [3];
-        const char* str = "--out";
-        const char* str2 = "output.txt";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","-out","output.txt" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
     SECTION("Parse incorrect argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--output=haram.bgb";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--output=haram.bgb" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
+        REQUIRE(result);
 
     }
 }
 
 TEST_CASE("FloatArg", "[all]")
 {
-    args_parser::ArgsParser<std::string> parser{};
+    args_parser::ArgsParser parser{};
     args_validator::NormalParserValidator<std::string> parserValidator{};
     parser.SetValidator(&parserValidator);
 
@@ -368,11 +272,8 @@ TEST_CASE("FloatArg", "[all]")
 
     SECTION("Correct parse short argument with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=4.0";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
@@ -380,161 +281,104 @@ TEST_CASE("FloatArg", "[all]")
 
     SECTION("Correct parse short argument without equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a4.0";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
     }
     SECTION("Correct parse short argument without equal and next parameter ")
     {
-        const char** argv = new const char* [3];
-        const char* str = "-a";
-        const char* str2 = "4.5";
-        argv[1] = str;
-        argv[2] = str2;
-
-        const auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","-a4.5" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
 
     }
 
-    
-
     SECTION("Incorrect parse wrong argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "------";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","------" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
     SECTION("Incorrect parse short argument")
     {
-        const char** argv = new const char* [2];
-        const char* str = "---a=4.0";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
 
     SECTION("Incorrect parse number")
     {
-        const char** argv = new const char* [2];
-        const char* str = "458";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","458" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
     }
 
     SECTION("Correct parse long argument with equal")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional=4.0";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional=4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
-
     }
 
     SECTION("Correct parse long argument without equal and next parameter ")
     {
-        const char** argv = new const char* [3];
-        const char* str = "--additional";
-        const char* str2 = "4.0";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(2, argv).isOk();
+       
+        std::vector argsv{ " ","--additional","4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
-
     }
     SECTION("Incorrect parse short argument with equal and empty parameter")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
-
+        REQUIRE(result);
     }
 
     SECTION("Incorrect parse long argument with equal and empty parameter")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional=";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional=" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
-
+        REQUIRE(result);
     }
     SECTION("Incorrect parse")
     {
-        const char** argv = new const char* [2];
-        const char* str = "--additional4";
-        argv[1] = str;
-
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","--additional4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE_FALSE(result);
-
     }
     SECTION("Parse short form of long name")
     {
-        const char** argv = new const char* [3];
-        const char* str = "--add";
-        const char* str2 = "4.0";
-        argv[1] = str;
-        argv[2] = str2;
-
-        auto result = parser.parse(3, argv).isOk();
+        std::vector argsv{ " ","--add=4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
         REQUIRE(result);
     }
 
     SECTION("Argument greater then right border of range")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=6.0";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=6.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
-
+        REQUIRE(result);
     }
 
     SECTION("Argument lether then left border of range")
     {
-        const char** argv = new const char* [2];
-        const char* str = "-a=-6.0";
-        argv[1] = str;
-
-        auto result = parser.parse(2, argv).isOk();
+        std::vector argsv{ " ","-a=-4.0" };
+        auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
-        REQUIRE_FALSE(result);
+        REQUIRE(result);
 
     }
 
@@ -567,7 +411,7 @@ TEST_CASE("Parse all arguments")
     SECTION("Correct parse all argument")
     {
 
-        args_parser::ArgsParser<std::string> parser{};
+        args_parser::ArgsParser parser{};
         args_validator::NormalParserValidator<std::string> parserValidator{};
         parser.SetValidator(&parserValidator);
 
@@ -576,7 +420,7 @@ TEST_CASE("Parse all arguments")
         parser.add(&stringArg);
         parser.add(&helpArg);
 
-        const char** args = new const char* [2];
+      
         const auto result = parser.parse((int)argsv.size(), &argsv[0]).isOk();
         std::cout << std::boolalpha << result << std::endl;
 
@@ -597,7 +441,7 @@ TEST_CASE("Parse all arguments")
 
 TEST_CASE("Parse single user type")
 {
-    args_parser::ArgsParser<std::string> parser{};
+    args_parser::ArgsParser parser{};
     args_validator::NormalParserValidator<std::string> parserValidator{};
     parser.SetValidator(&parserValidator);
 

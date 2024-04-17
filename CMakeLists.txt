@@ -27,7 +27,9 @@ endif()
 
 # Подключаем подпроекты.
 add_subdirectory(args_parse)
+add_subdirectory(directory_and_pool)
 add_subdirectory(main)
+add_subdirectory(scan_directory)
 
 # Нам нужен Catch2.
 # ПРИМЕЧАНИЕ: опция CONFIG здесь нужна обязательно, без нее при компиляции

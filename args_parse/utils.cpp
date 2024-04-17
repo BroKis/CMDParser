@@ -40,7 +40,7 @@ namespace utils
 
     std::chrono::microseconds chronoToMicroseconds(long long value, std::string &unit)
     {
-        std::chrono::microseconds ms;
+        std::chrono::microseconds ms{};
         if (unit == "d") {
             auto seconds = std::chrono::seconds(value);
             ms = std::chrono::microseconds(seconds);
