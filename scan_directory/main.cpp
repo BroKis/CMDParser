@@ -8,38 +8,46 @@
 
 int main(int argc, const char** argv)
 {
-    args_parser::ArgsParser parser;
-    args_validator::NormalParserValidator<std::string> validator;
-    parser.SetValidator(&validator);
+	args_parser::ArgsParser parser;
+	args_validator::NormalParserValidator<std::string> validator;
+	parser.SetValidator(&validator);
 
-    single_arg::SingleArgument<int, int> threadArg = { 't', "thread", true };
-    args_validator::InRangeValidator<int> validator1{ 0,26 };
-    threadArg.setValidator(&validator1);
+	single_arg::SingleArgument<int, int> threadArg = { 't', "thread", true };
+	args_validator::InRangeValidator<int> validator1{ 0,26 };
+	threadArg.setValidator(&validator1);
 
-    single_arg::SingleArgument<std::string> pathArg = { 'p', "path", true };
-    args_validator::NormalPathValidator<std::string> validator2{};
-    pathArg.setValidator(&validator2);
+	single_arg::SingleArgument<std::string> pathArg = { 'p', "path", true };
+	args_validator::NormalPathValidator<std::string> validator2{};
+	pathArg.setValidator(&validator2);
 
-    single_arg::SingleArgument<user_types::ChronoCloack, std::string> debugSleep{ 'd',"debug-sleep",true };
-    args_validator::NormalChronoValidator<std::string> chronoValidator{};
-    debugSleep.setValidator(&chronoValidator);
+	single_arg::SingleArgument<user_types::ChronoCloack, std::string> debugSleep{ 'd',"debug-sleep",true };
+	args_validator::NormalChronoValidator<std::string> chronoValidator{};
+	debugSleep.setValidator(&chronoValidator);
 
-    parser.add(&threadArg);
-    parser.add(&pathArg);
-    parser.add(&debugSleep);
+	parser.add(&threadArg);
+	parser.add(&pathArg);
+	parser.add(&debugSleep);
 
-    if (const auto result = parser.parse(argc, argv); result.isOk())
-    {
-        thread_pool::ThreadPool pool(threadArg.GetValue());
-        pool.setDebugSleep(debugSleep.GetValue().GetMicroseconds());
-        directory::Directory directory{ pathArg.GetValue()};
-        pool.enqueue([&pool, &directory]() {
-            executor::execution_function(pool, directory);
-            });
-        pool.waitFinishTasks();
-        directory.Show();
-
-    
-
-    }
+	if (const auto result = parser.parse(argc, argv); result.isOk())
+	{
+		if (!threadArg.isDefined() && !pathArg.isDefined() && !debugSleep.isDefined())
+		{
+			std::cout << "You have isn't defined arguments" << std::endl;
+			return 1;
+		}
+		thread_pool::ThreadPool pool(threadArg.GetValue());
+		pool.setDebugSleep(debugSleep.GetValue().GetMicroseconds());
+		directory::Directory directory{ pathArg.GetValue() };
+		pool.enqueue([&pool, &directory]() {
+			executor::execution_function(pool, directory);
+			});
+		pool.waitFinishTasks();
+		directory.Show();
+	}
+	else
+	{
+		std::cout << result.Error().description << std::endl;
+		return 1;
+	}
+	return 0;
 }

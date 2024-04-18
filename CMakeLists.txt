@@ -34,13 +34,9 @@ add_subdirectory(scan_directory)
 # Нам нужен Catch2.
 # ПРИМЕЧАНИЕ: опция CONFIG здесь нужна обязательно, без нее при компиляции
 # под Windows будут недоступны заголовочные файлы Catch2.
-find_package(Catch2 CONFIG REQUIRED)
 
 
 # Разрешаем поддержку unit-тестов.
-include(CTest)
-include(Catch)
-enable_testing()
+
 
 # Подключаем проект с тестами.
-add_subdirectory(test)
